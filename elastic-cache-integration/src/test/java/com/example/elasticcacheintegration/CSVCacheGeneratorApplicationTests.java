@@ -1,10 +1,10 @@
-package com.example.exceldatabasegenerator;
+package com.example.elasticcacheintegration;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class CSVDatabaseGeneratorApplicationTests {
+class CSVCacheGeneratorApplicationTests {
 
     @Test
     void contextLoads() {

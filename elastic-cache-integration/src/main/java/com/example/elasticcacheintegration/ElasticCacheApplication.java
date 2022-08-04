@@ -1,13 +1,13 @@
-package com.example.exceldatabasegenerator;
+package com.example.elasticcacheintegration;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class CSVDatabaseGeneratorApplication {
+public class ElasticCacheApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(CSVDatabaseGeneratorApplication.class, args);
+        SpringApplication.run(ElasticCacheApplication.class, args);
     }
 
 }

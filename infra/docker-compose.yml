@@ -54,4 +54,4 @@ services:
       - ${REDIS_PORT}
 #    volumes:
 #      - ./config/redis.conf:/redis.conf
-#    command: [ "redis-server", "/redis.conf" ]
+    command: [ "redis-server", "--appendonly yes", "--requirepass ${REDIS_PASSWORD}" ]
