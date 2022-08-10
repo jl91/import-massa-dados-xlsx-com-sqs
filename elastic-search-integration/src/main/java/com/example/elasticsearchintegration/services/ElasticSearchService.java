@@ -9,16 +9,20 @@ import com.example.elasticsearchintegration.repositories.LineRepository;
 import io.awspring.cloud.messaging.core.QueueMessagingTemplate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.swing.text.html.Option;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -165,6 +169,21 @@ public class ElasticSearchService {
             file.delete();
         }
 
+    }
+
+
+    public List<LineEntity> fetchAll(
+            final Optional<BigInteger> page,
+            final Optional<BigInteger> size
+    ) {
+        final var newPage = page.isPresent() ? page.get() : 1;
+        final var newSize = size.isPresent() ? size.get() : 10;
+
+        final var pageRequest = PageRequest.of(newPage.intValue(), newSize.intValue());
+
+
+        return lineRepository.findAll(pageRequest)
+                .getContent();
     }
 
 

@@ -48,7 +48,7 @@ public class CSVReader {
                     .setContractNumber(current[8])
                     .setContractValue(new BigDecimal(current[9]))
                     .setContractInstallmentsSize(Integer.parseInt(current[10]))
-                    .setContractReferenceDate(LocalDate.parse(current[11]))
+                    .setContractReferenceDate(current[11])
                     .setContractWarningLevel(current[12])
             ;
 
