@@ -1,28 +1,28 @@
 version: "3.8"
 
 services:
-#  localstack:
-#    container_name: "${LOCALSTACK_DOCKER_NAME-localstack_main}"
-#    image: localstack/localstack
-#    ports:
-#      - "127.0.0.1:4566:4566"            # LocalStack Gateway
-#      - "127.0.0.1:4510-4559:4510-4559"  # external services port range
-#      - "127.0.0.1:53:53"                # DNS config (only required for Pro)
-#      - "127.0.0.1:53:53/udp"            # DNS config (only required for Pro)
-#      - "127.0.0.1:443:443"              # LocalStack HTTPS Gateway (only required for Pro)
-#    environment:
-#      - DEBUG=${DEBUG-}
-#      - PERSISTENCE=${PERSISTENCE-}
-#      - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR-}
-#      - LOCALSTACK_API_KEY=${LOCALSTACK_API_KEY-}  # only required for Pro
-#      - DOCKER_HOST=unix:///var/run/docker.sock
-#      - AWS_REGION=us-east-1
-#      - AWS_ACCESS_KEY_ID=awsaccesskey
-#      - AWS_SECRET_ACCESS_KEY=awssecretkey
-#    volumes:
-#      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
-#      - "/var/run/docker.sock:/var/run/docker.sock"
-#
+  localstack:
+    container_name: "${LOCALSTACK_DOCKER_NAME-localstack_main}"
+    image: localstack/localstack
+    ports:
+      - "127.0.0.1:4566:4566"            # LocalStack Gateway
+      - "127.0.0.1:4510-4559:4510-4559"  # external services port range
+      - "127.0.0.1:53:53"                # DNS config (only required for Pro)
+      - "127.0.0.1:53:53/udp"            # DNS config (only required for Pro)
+      - "127.0.0.1:443:443"              # LocalStack HTTPS Gateway (only required for Pro)
+    environment:
+      - DEBUG=${DEBUG-}
+      - PERSISTENCE=${PERSISTENCE-}
+      - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR-}
+      - LOCALSTACK_API_KEY=${LOCALSTACK_API_KEY-}  # only required for Pro
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - AWS_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=awsaccesskey
+      - AWS_SECRET_ACCESS_KEY=awssecretkey
+    volumes:
+      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+
 #  mysql_server:
 #    image: mysql:8.0.26
 #    platform: linux/x86_64
@@ -43,15 +43,62 @@ services:
 #      MYSQL_PASSWORD: ${MYSQL_DATABASE_PASSWORD}
 #      MYSQL_ROOT_PASSWORD: ${MYSQL_DATABASE_ROOT_PASSWORD}
 
-  redis_server:
-    image: redis:7.0.4-alpine
+#  redis_server:
+#    image: redis:7.0.4-alpine
+#    platform: linux/x86_64
+#    env_file:
+#      - .env
+#    ports:
+#      - ${REDIS_PORT}:6379
+#    expose:
+#      - ${REDIS_PORT}
+##    volumes:
+##      - ./config/redis.conf:/redis.conf
+#    command: [ "redis-server", "--appendonly yes", "--requirepass ${REDIS_PASSWORD}" ]
+
+
+  elasticsearch:
+    image: elasticsearch:7.17.5
     platform: linux/x86_64
     env_file:
       - .env
+    container_name: ecommerce_elasticsearch
+    environment:
+      - node.name=ecommerce_cluster_1
+      - cluster.name=ecommerce_cluster
+      - cluster.initial_master_nodes=ecommerce_cluster_1
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms256M -Xmx256M"
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - network.host=_eth0_
+    ulimits:
+      nproc: 262144
+      memlock:
+        soft: -1
+        hard: -1
+    cap_add:
+      - ALL
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '1'
+          memory: 1G
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 10s
+    volumes:
+      - ${ELASTIC_SEARCH_DIR}:/usr/share/elasticsearch/data
+      - ${ELASTIC_SEARCH_LOGS_DIR}:/usr/share/elasticsearch/logs
     ports:
-      - ${REDIS_PORT}:6379
-    expose:
-      - ${REDIS_PORT}
-#    volumes:
-#      - ./config/redis.conf:/redis.conf
-    command: [ "redis-server", "--appendonly yes", "--requirepass ${REDIS_PASSWORD}" ]
+      - "19200:9200"
+      - "19300:9300"
