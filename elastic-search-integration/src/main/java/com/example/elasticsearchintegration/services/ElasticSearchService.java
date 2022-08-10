@@ -154,10 +154,15 @@ public class ElasticSearchService {
             index++;
         }
 
-        if(!sublist.isEmpty()){
+        if (!sublist.isEmpty()) {
             log.info("Last lines {}");
             lineRepository.saveAll(sublist);
             sublist.clear();
+        }
+
+        final var file = new File(filepath);
+        if (file.exists() && file.canWrite()) {
+            file.delete();
         }
 
     }
