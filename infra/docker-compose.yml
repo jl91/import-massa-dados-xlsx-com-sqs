@@ -57,48 +57,48 @@ services:
 #    command: [ "redis-server", "--appendonly yes", "--requirepass ${REDIS_PASSWORD}" ]
 
 
-  elasticsearch:
-    image: elasticsearch:7.17.5
-    platform: linux/x86_64
-    env_file:
-      - .env
-    container_name: ecommerce_elasticsearch
-    environment:
-      - node.name=ecommerce_cluster_1
-      - cluster.name=ecommerce_cluster
-      - cluster.initial_master_nodes=ecommerce_cluster_1
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms256M -Xmx256M"
-      - http.cors.enabled=true
-      - http.cors.allow-origin=*
-      - network.host=_eth0_
-    ulimits:
-      nproc: 262144
-      memlock:
-        soft: -1
-        hard: -1
-    cap_add:
-      - ALL
-    deploy:
-      replicas: 1
-      update_config:
-        parallelism: 1
-        delay: 10s
-      resources:
-        limits:
-          cpus: '1'
-          memory: 1G
-        reservations:
-          cpus: '1'
-          memory: 1G
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
-        window: 10s
-    volumes:
-      - ${ELASTIC_SEARCH_DIR}:/usr/share/elasticsearch/data
-      - ${ELASTIC_SEARCH_LOGS_DIR}:/usr/share/elasticsearch/logs
-    ports:
-      - "19200:9200"
-      - "19300:9300"
+#  elasticsearch:
+#    image: elasticsearch:7.17.5
+#    platform: linux/x86_64
+#    env_file:
+#      - .env
+#    container_name: ecommerce_elasticsearch
+#    environment:
+#      - node.name=ecommerce_cluster_1
+#      - cluster.name=ecommerce_cluster
+#      - cluster.initial_master_nodes=ecommerce_cluster_1
+#      - bootstrap.memory_lock=true
+#      - "ES_JAVA_OPTS=-Xms256M -Xmx256M"
+#      - http.cors.enabled=true
+#      - http.cors.allow-origin=*
+#      - network.host=_eth0_
+#    ulimits:
+#      nproc: 262144
+#      memlock:
+#        soft: -1
+#        hard: -1
+#    cap_add:
+#      - ALL
+#    deploy:
+#      replicas: 1
+#      update_config:
+#        parallelism: 1
+#        delay: 10s
+#      resources:
+#        limits:
+#          cpus: '1'
+#          memory: 1G
+#        reservations:
+#          cpus: '1'
+#          memory: 1G
+#      restart_policy:
+#        condition: on-failure
+#        delay: 5s
+#        max_attempts: 3
+#        window: 10s
+#    volumes:
+#      - ${ELASTIC_SEARCH_DIR}:/usr/share/elasticsearch/data
+#      - ${ELASTIC_SEARCH_LOGS_DIR}:/usr/share/elasticsearch/logs
+#    ports:
+#      - "19200:9200"
+#      - "19300:9300"
