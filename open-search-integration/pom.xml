@@ -20,7 +20,7 @@
         <elastic-search.version>2.7.2</elastic-search.version>
         <awssdk.version>2.17.243</awssdk.version>
         <awspring.cloud.version>2.4.1</awspring.cloud.version>
-        <opensearch-client.version>1.3.1</opensearch-client.version>
+        <opensearch-client.version>1.3.4</opensearch-client.version>
         <opencsv.version>5.6</opencsv.version>
         <jackson.version>2.13.3</jackson.version>
     </properties>
@@ -72,19 +72,12 @@
             <version>${opencsv.version}</version>
         </dependency>
 
-        <!-- ELASTIC SEARCH  -->
+        <!--OPEN SEARCH-->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
-            <version>${elastic-search.version}</version>
+            <groupId>org.opensearch.client</groupId>
+            <artifactId>opensearch-rest-high-level-client</artifactId>
+            <version>${opensearch-client.version}</version>
         </dependency>
-
-        <!-- opensearch  -->
-<!--        <dependency>-->
-<!--            <groupId>org.opensearch.client</groupId>-->
-<!--            <artifactId>opensearch-rest-high-level-client</artifactId>-->
-<!--            <version>${opensearch-client.version}</version>-->
-<!--        </dependency>-->
 
         <!-- AWS  -->
         <dependency>
@@ -119,18 +112,6 @@
         </dependency>
 
     </dependencies>
-
-<!--    <dependencyManagement>-->
-<!--        <dependencies>-->
-<!--            <dependency>-->
-<!--                <groupId>com.amazonaws</groupId>-->
-<!--                <artifactId>aws-java-sdk-bom</artifactId>-->
-<!--                <version>${awssdk.version}</version>-->
-<!--                <type>pom</type>-->
-<!--                <scope>import</scope>-->
-<!--            </dependency>-->
-<!--        </dependencies>-->
-<!--    </dependencyManagement>-->
 
     <dependencyManagement>
         <dependencies>

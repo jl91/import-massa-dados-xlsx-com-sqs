@@ -1,6 +1,6 @@
 package com.example.opensearchintegration.services;
 
-import com.example.opensearchintegration.integration.aws.opensearch.entities.LineEntity;
+import com.example.opensearchintegration.integration.aws.opensearch.documents.LineDocument;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
 import com.opencsv.validators.RowValidator;
@@ -15,11 +15,11 @@ import java.util.*;
 @Slf4j
 public class CSVReader {
 
-    public List<LineEntity> readFile(
+    public List<LineDocument> readFile(
             final String filepath
     ) throws FileNotFoundException {
 
-        final List<LineEntity> result = new ArrayList();
+        final List<LineDocument> result = new ArrayList();
         final var reader = new CSVReaderBuilder(new FileReader(filepath))
                 .withRowValidator(fabricateCustomValidator())
                 .build();
@@ -33,9 +33,9 @@ public class CSVReader {
 
         while (readerIterator.hasNext()){
             final var current = readerIterator.next();
-            final LineEntity lineEntity = new LineEntity();
+            final LineDocument lineDocument = new LineDocument();
 
-            lineEntity.setCustomerName(current[0])
+            lineDocument.setCustomerName(current[0])
                     .setCustomerType(current[1])
                     .setCustomerDocument(current[2])
                     .setPhoneDDD(Integer.parseInt(current[3]))
@@ -50,7 +50,7 @@ public class CSVReader {
                     .setContractWarningLevel(current[12])
             ;
 
-            result.add(lineEntity);
+            result.add(lineDocument);
 
         }
 

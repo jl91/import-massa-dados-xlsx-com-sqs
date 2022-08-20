@@ -1,4 +1,4 @@
-package com.example.opensearchintegration.integration.aws.opensearch.configuration;
+package com.example.opensearchintegration.integration.aws.opensearch.configurations;
 
 import com.amazonaws.DefaultRequest;
 import com.amazonaws.auth.AWSCredentialsProvider;

@@ -1,22 +1,13 @@
 package com.example.opensearchintegration.services;
 
 import com.example.opensearchintegration.configuration.ApplicationProperties;
-import com.example.opensearchintegration.integration.aws.opensearch.entities.LineEntity;
-import com.example.opensearchintegration.integration.aws.opensearch.repositories.LineRepository;
+import com.example.opensearchintegration.integration.aws.opensearch.documents.LineDocument;
 import com.example.opensearchintegration.integration.aws.s3.*;
 import com.example.opensearchintegration.integration.aws.s3.Object;
 import com.example.opensearchintegration.integration.aws.sqs.publishers.message.NewFileUploaded;
-//import com.example.opensearchintegration.integration.aws.opensearch.repositories.LineRepository;
 import io.awspring.cloud.messaging.core.QueueMessagingTemplate;
 import lombok.extern.slf4j.Slf4j;
-//import org.opensearch.action.admin.indices.alias.Alias;
-//import org.opensearch.client.RequestOptions;
-//import org.opensearch.client.RestHighLevelClient;
-//import org.opensearch.client.indices.CreateIndexRequest;
-//import org.opensearch.client.indices.CreateIndexResponse;
-//import org.opensearch.common.settings.Settings;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,7 +16,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,14 +27,10 @@ public class OpenSearchService {
     CSVReader CSVReader;
 
     @Autowired
-    LineRepository lineRepository;
-
-    @Autowired
     ApplicationProperties applicationProperties;
 
     @Autowired
     private QueueMessagingTemplate messagingTemplate;
-
 
 //    @Autowired
 //    RestHighLevelClient client;
@@ -165,7 +151,7 @@ public class OpenSearchService {
 
         // só apaga a base atual se conseguir ler a base do Elastic Search, geralmente usa-se um
         log.info("Clean ElasticSearch started");
-        lineRepository.deleteAll();
+//        lineRepository.deleteAll();
         log.info("Clean ElasticSearch Done");
 
         log.info("Loading InMemoryDatabase started");
@@ -173,14 +159,14 @@ public class OpenSearchService {
         log.info("Loading InMemoryDatabase done");
 
         log.info("Save inMemoryDatabase started");
-        lineRepository.saveAll(inMemoryDatabase);
+//        lineRepository.saveAll(inMemoryDatabase);
         log.info("Save inMemoryDatabase done");
 
         final var iterator = inMemoryDatabase.subList(0, 10000)
                 .iterator();
         var index = 0;
 
-        final List<LineEntity> sublist = new ArrayList<>();
+        final List<LineDocument> sublist = new ArrayList<>();
 
         while (iterator.hasNext()) {
             final var currentLine = iterator.next();
@@ -210,19 +196,19 @@ public class OpenSearchService {
     }
 
 
-    public List<LineEntity> fetchAll(
+    public List<LineDocument> fetchAll(
             final Optional<BigInteger> page,
             final Optional<BigInteger> size
     ) {
         final var newPage = page.isPresent() ? page.get() : 1;
         final var newSize = size.isPresent() ? size.get() : 10;
 
-        final var pageRequest = PageRequest.of(newPage.intValue(), newSize.intValue());
+//        final var pageRequest = PageRequest.of(newPage.intValue(), newSize.intValue());
 
 
-        return lineRepository.findAll(pageRequest)
-                .getContent();
-//        return List.of(new LineEntity());
+//        return lineRepository.findAll(pageRequest)
+//                .getContent();
+        return List.of(new LineDocument());
     }
 
 

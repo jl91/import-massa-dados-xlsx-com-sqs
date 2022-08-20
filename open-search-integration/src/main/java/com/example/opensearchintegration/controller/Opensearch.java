@@ -1,6 +1,6 @@
 package com.example.opensearchintegration.controller;
 
-import com.example.opensearchintegration.integration.aws.opensearch.entities.LineEntity;
+import com.example.opensearchintegration.integration.aws.opensearch.documents.LineDocument;
 import com.example.opensearchintegration.services.OpenSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -45,7 +45,7 @@ public class Opensearch {
 //    }
 
     @GetMapping()
-    public List<LineEntity> all(
+    public List<LineDocument> all(
             @RequestParam("page") final Optional<BigInteger> page,
             @RequestParam("size") final Optional<BigInteger> size
     ) {
