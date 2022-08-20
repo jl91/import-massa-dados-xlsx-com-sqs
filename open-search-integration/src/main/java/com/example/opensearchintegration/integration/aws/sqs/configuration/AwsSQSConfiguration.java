@@ -20,8 +20,8 @@ import java.util.Collections;
 @Configuration
 public class AwsSQSConfiguration {
 
-//    @Autowired
-//    AWSStaticCredentialsProvider awsStaticCredentialsProvider;
+    @Autowired
+    AWSStaticCredentialsProvider awsStaticCredentialsProvider;
 
     @Autowired
     AwsClientCredentialsConfiguration awsClientCredentials;
@@ -43,7 +43,7 @@ public class AwsSQSConfiguration {
         return AmazonSQSAsyncClientBuilder
                 .standard()
 //                .withRegion(Regions.fromName(region))
-//                .withCredentials(awsStaticCredentialsProvider)
+                .withCredentials(awsStaticCredentialsProvider)
                 .withEndpointConfiguration(
                         new AwsClientBuilder.EndpointConfiguration(
                                 endpoint,

@@ -46,7 +46,8 @@ public class OpenSearchService {
                 )
         );
 
-        this.dispatchNewFileUploaded(fileName);
+//        this.dispatchNewFileUploaded(fileName);
+        this.processFile(path);
 
     }
 
@@ -166,16 +167,11 @@ public class OpenSearchService {
     public List<LineDocument> fetchAll(
             final Optional<BigInteger> page,
             final Optional<BigInteger> size
-    ) {
-        final var newPage = page.isPresent() ? page.get() : 1;
-        final var newSize = size.isPresent() ? size.get() : 10;
+    ) throws IOException {
+        final BigInteger newPage = page.isPresent() ? page.get() : BigInteger.valueOf(1);
+        final BigInteger newSize = size.isPresent() ? size.get() : BigInteger.valueOf(10);
 
-//        final var pageRequest = PageRequest.of(newPage.intValue(), newSize.intValue());
-
-
-//        return lineRepository.findAll(pageRequest)
-//                .getContent();
-        return List.of(new LineDocument());
+        return lineDocumentsOpenSearchService.findAllDocuments(newPage, newSize);
     }
 
 

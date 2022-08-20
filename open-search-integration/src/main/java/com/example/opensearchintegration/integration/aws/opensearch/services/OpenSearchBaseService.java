@@ -17,6 +17,7 @@ import org.opensearch.index.query.QueryBuilders;
 import org.opensearch.search.builder.SearchSourceBuilder;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,9 +51,15 @@ public abstract class OpenSearchBaseService<T> {
         }
     }
 
-    public List<T> findAllDocuments() throws IOException {
+    public List<T> findAllDocuments(
+            final BigInteger page,
+            final BigInteger size
+
+    ) throws IOException {
         SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
         sourceBuilder.query(QueryBuilders.matchAllQuery());
+        sourceBuilder.from(page.intValue());
+        sourceBuilder.size(size.intValue());
 
         return this.searchDocuments(
                 sourceBuilder
