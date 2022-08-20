@@ -25,7 +25,13 @@ public class JacksonConfig {
 
     @Bean
     public ObjectMapper objectMapper() {
-        return new ObjectMapper();
+        return new ObjectMapper()
+                .registerModule(
+                        new Jdk8Module()
+                )
+                .registerModule(
+                        new JavaTimeModule()
+                );
     }
 
     @Bean

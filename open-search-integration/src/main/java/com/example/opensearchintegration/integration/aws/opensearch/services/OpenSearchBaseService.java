@@ -1,5 +1,6 @@
 package com.example.opensearchintegration.integration.aws.opensearch.services;
 
+import com.example.opensearchintegration.integration.aws.opensearch.documents.BaseDocument;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.opensearch.action.admin.indices.alias.Alias;
@@ -26,7 +27,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
-public abstract class OpenSearchBaseService<T> {
+public abstract class OpenSearchBaseService<T extends BaseDocument> {
 
     private RestHighLevelClient client;
 
@@ -101,7 +102,7 @@ public abstract class OpenSearchBaseService<T> {
                             this.clazz
                     );
 
-//                    document.setUuid(searchHint.getId());
+                    document.setUuid(searchHint.getId());
                     return document;
                 })
                 .collect(Collectors.toList());
@@ -149,10 +150,10 @@ public abstract class OpenSearchBaseService<T> {
             documentsMappers.add(documentMap);
         }
 
-        return this.addDocumentsMap(documentsMappers);
+        return this.saveDocumentsMap(documentsMappers);
     }
 
-    private int addDocumentsMap(
+    private int saveDocumentsMap(
             final List<Map<String, Object>> documentsMappers
     ) throws IOException {
 

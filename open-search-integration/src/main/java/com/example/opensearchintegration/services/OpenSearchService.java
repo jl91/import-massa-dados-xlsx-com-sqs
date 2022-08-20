@@ -134,16 +134,15 @@ public class OpenSearchService {
 
         final var iterator = inMemoryDatabase.subList(0, 10000)
                 .iterator();
-        var index = 0;
 
         final List<LineDocument> sublist = new ArrayList<>();
 
-        while (iterator.hasNext()) {
+        for (int index = 0; iterator.hasNext(); index++) {
             final var currentLine = iterator.next();
 
             sublist.add(currentLine);
             currentLine.setUuid(UUID.randomUUID().toString());
-//            currentLine.setCreatedAt(LocalDate.now());
+            currentLine.setCreatedAt(LocalDate.now());
 
             if (sublist.size() == 100) {
                 log.info("Saving chunk {}", (index + 1) / 100);
@@ -151,8 +150,6 @@ public class OpenSearchService {
                 log.info("Total saved lines {}", totalResult);
                 sublist.clear();
             }
-
-            index++;
         }
 
         if (!sublist.isEmpty()) {
