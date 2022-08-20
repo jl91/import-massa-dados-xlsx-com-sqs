@@ -108,6 +108,30 @@ public abstract class OpenSearchBaseService<T> {
         return documents;
     }
 
+    public int save(
+            final T document
+    ) throws IOException {
+
+        log.info("Add documents of {}", this.indexName);
+
+        final var docMapper = objectMapper.convertValue(document, Map.class);
+
+        final var indexRequest = new IndexRequest(
+                this.indexName
+        )
+                .source(docMapper);
+
+        final var bulkRequest = new BulkRequest();
+        bulkRequest.add(indexRequest);
+
+        final var response = client.bulk(
+                bulkRequest,
+                RequestOptions.DEFAULT
+        );
+
+        return response.getItems().length;
+    }
+
     public int saveAll(
             final List<T> documents
     ) throws IOException {
@@ -118,28 +142,28 @@ public abstract class OpenSearchBaseService<T> {
             return 0;
         }
 
-        final var docMappers = new ArrayList<Map<String, Object>>();
+        final var documentsMappers = new ArrayList<Map<String, Object>>();
 
         for (T document : documents) {
-            final var docMapper = objectMapper.convertValue(document, Map.class);
-            docMappers.add(docMapper);
+            final var documentMap = objectMapper.convertValue(document, Map.class);
+            documentsMappers.add(documentMap);
         }
 
-        return this.addDocumentsList(docMappers);
+        return this.addDocumentsMap(documentsMappers);
     }
 
-    private int addDocumentsList(
-            final List<Map<String, Object>> docMappers
+    private int addDocumentsMap(
+            final List<Map<String, Object>> documentsMappers
     ) throws IOException {
 
         final var bulkRequest = new BulkRequest();
 
-        for (Map<String, Object> docMapper : docMappers) {
+        for (Map<String, Object> documentMap : documentsMappers) {
 
             final var indexRequest = new IndexRequest(
                     this.indexName
             )
-                    .source(docMapper);
+                    .source(documentMap);
 
             bulkRequest.add(indexRequest);
         }

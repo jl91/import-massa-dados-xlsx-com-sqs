@@ -15,9 +15,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -119,7 +121,7 @@ public class OpenSearchService {
     ) throws IOException {
 
         log.info("Clean OpenSearch started");
-        lineDocumentsOpenSearchService.clearIndex();
+//        lineDocumentsOpenSearchService.clearIndex();
         log.info("Clean OpenSearch Done");
 
         log.info("Loading InMemoryDatabase started");
@@ -140,10 +142,13 @@ public class OpenSearchService {
             final var currentLine = iterator.next();
 
             sublist.add(currentLine);
+            currentLine.setUuid(UUID.randomUUID().toString());
+//            currentLine.setCreatedAt(LocalDate.now());
 
             if (sublist.size() == 100) {
                 log.info("Saving chunk {}", (index + 1) / 100);
-                lineDocumentsOpenSearchService.saveAll(sublist);
+                final var totalResult = lineDocumentsOpenSearchService.saveAll(sublist);
+                log.info("Total saved lines {}", totalResult);
                 sublist.clear();
             }
 
