@@ -2,6 +2,7 @@ package com.example.opensearchintegration.services;
 
 import com.example.opensearchintegration.configuration.ApplicationProperties;
 import com.example.opensearchintegration.integration.aws.opensearch.documents.LineDocument;
+import com.example.opensearchintegration.integration.aws.opensearch.services.LineDocumentsOpenSearchService;
 import com.example.opensearchintegration.integration.aws.s3.*;
 import com.example.opensearchintegration.integration.aws.s3.Object;
 import com.example.opensearchintegration.integration.aws.sqs.publishers.message.NewFileUploaded;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -24,45 +24,16 @@ import java.util.Optional;
 public class OpenSearchService {
 
     @Autowired
-    CSVReader CSVReader;
+    private CSVReader CSVReader;
 
     @Autowired
-    ApplicationProperties applicationProperties;
+    private ApplicationProperties applicationProperties;
 
     @Autowired
     private QueueMessagingTemplate messagingTemplate;
 
-//    @Autowired
-//    RestHighLevelClient client;
-//
-//    public void createIndex(
-//            final String name
-//    ) throws IOException {
-//
-//        // Create a non-default index with custom settings and mappings.
-//        final var createIndexRequest = new CreateIndexRequest(name);
-//
-//        createIndexRequest.settings(
-//                Settings.builder() //Specify in the settings how many shards you want in the index.
-//                .put("index.number_of_shards", 1)
-//                .put("index.number_of_replicas", 0)
-//        );
-//        //Create a set of maps for the index's mappings.
-//        HashMap<String, String> typeMapping = new HashMap<String,String>();
-//        typeMapping.put("type", "integer");
-//
-//        HashMap<String, HashMap<String, String>> ageMapping = new HashMap<>();
-//        ageMapping.put("age", typeMapping);
-//
-//        HashMap<String, HashMap<String, HashMap<String, String>>> mapping = new HashMap<>();
-//        mapping.put("properties", ageMapping);
-//        createIndexRequest.mapping(mapping);
-//        createIndexRequest.alias(new Alias(name + "_alias"));
-//
-//        CreateIndexResponse createIndexResponse = client.indices()
-//                .create(createIndexRequest, RequestOptions.DEFAULT);
-//
-//    }
+    @Autowired
+    private LineDocumentsOpenSearchService lineDocumentsOpenSearchService;
 
     public void saveFile(
             final MultipartFile multipartFile
@@ -82,9 +53,7 @@ public class OpenSearchService {
     private void dispatchNewFileUploaded(
             final String filename
     ) {
-
         final var message = getMessage(filename);
-
         messagingTemplate.convertAndSend(
                 applicationProperties.getNewFileUploaded(),
                 message
@@ -144,23 +113,21 @@ public class OpenSearchService {
 
     }
 
-//    @Transactional(propagation = Propagation.REQUIRED)
     public void processFile(
             final String filepath
-    ) throws FileNotFoundException {
+    ) throws IOException {
 
-        // só apaga a base atual se conseguir ler a base do Elastic Search, geralmente usa-se um
-        log.info("Clean ElasticSearch started");
-//        lineRepository.deleteAll();
-        log.info("Clean ElasticSearch Done");
+        log.info("Clean OpenSearch started");
+        lineDocumentsOpenSearchService.clearIndex();
+        log.info("Clean OpenSearch Done");
 
         log.info("Loading InMemoryDatabase started");
         final var inMemoryDatabase = CSVReader.readFile(filepath);
         log.info("Loading InMemoryDatabase done");
 
-        log.info("Save inMemoryDatabase started");
-//        lineRepository.saveAll(inMemoryDatabase);
-        log.info("Save inMemoryDatabase done");
+//        log.info("Save inMemoryDatabase started");
+////        lineRepository.saveAll(inMemoryDatabase);
+//        log.info("Save inMemoryDatabase done");
 
         final var iterator = inMemoryDatabase.subList(0, 10000)
                 .iterator();
@@ -175,7 +142,7 @@ public class OpenSearchService {
 
             if (sublist.size() == 100) {
                 log.info("Saving chunk {}", (index + 1) / 100);
-//                lineRepository.saveAll(sublist);
+                lineDocumentsOpenSearchService.saveAll(sublist);
                 sublist.clear();
             }
 
@@ -184,7 +151,7 @@ public class OpenSearchService {
 
         if (!sublist.isEmpty()) {
             log.info("Last lines {}");
-//            lineRepository.saveAll(sublist);
+            lineDocumentsOpenSearchService.saveAll(sublist);
             sublist.clear();
         }
 

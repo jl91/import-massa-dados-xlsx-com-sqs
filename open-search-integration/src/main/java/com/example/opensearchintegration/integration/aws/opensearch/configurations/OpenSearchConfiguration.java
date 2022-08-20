@@ -1,7 +1,5 @@
 package com.example.opensearchintegration.integration.aws.opensearch.configurations;
 
-import com.amazonaws.auth.AWS4Signer;
-import com.amazonaws.auth.AWSCredentialsProvider;
 import com.example.opensearchintegration.integration.aws.configuration.AwsClientCredentialsConfiguration;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -24,39 +22,7 @@ public class OpenSearchConfiguration {
     OpenSearchProperties openSearchProperties;
 
     @Autowired
-    AWSCredentialsProvider awsCredentialsProvider;
-
-    @Autowired
     AwsClientCredentialsConfiguration awsClientCredentialsConfiguration;
-
-
-//    @Bean
-//    public RestTemplate restTemplate() {
-//        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager();
-//        connectionManager.setMaxTotal(MAX_CONNECTIONS);
-//        connectionManager.setDefaultMaxPerRoute(MAX_CONNECTIONS_PER_ROUTE);
-//
-//        final var httpClient = HttpClientBuilder.create()
-//                .setConnectionManager(connectionManager)
-//                .build();
-//
-//        RestTemplate restTemplate = new RestTemplateBuilder()
-//                .setConnectTimeout(Duration.ofMillis(CONNECTION_TIMEOUT))
-//                .setReadTimeout(Duration.ofMillis(CONNECTION_TIMEOUT))
-//                .messageConverters(new StringHttpMessageConverter(), new MappingJackson2HttpMessageConverter())
-//                .requestFactory(() -> new HttpComponentsClientHttpRequestFactory(httpClient))
-//                .build();
-//
-////        restTemplate.getInterceptors().add(
-////                new BasicAuthenticationInterceptor(
-////                        this.tokenUsername,
-////                        this.tokenPassword
-////                )
-////        );
-//
-//        return restTemplate;
-//    }
-
 
     @Bean
     public CredentialsProvider credentialsProvider() {
@@ -68,23 +34,14 @@ public class OpenSearchConfiguration {
                         openSearchProperties.getPassword()
                 )
         );
-
         return credentialsProvider;
     }
 
     @Bean
     public RestHighLevelClient client(
             final CredentialsProvider credentialsProvider
-
     ) throws MalformedURLException {
         final var url = new URL(openSearchProperties.getHostname());
-
-        final var SERVICE_NAME = "es";
-
-        final var signer = new AWS4Signer();
-        signer.setServiceName(SERVICE_NAME);
-        signer.setRegionName(awsClientCredentialsConfiguration.getRegion());
-
         final var builder = RestClient.builder(
                         new HttpHost(
                                 url.getHost(),
@@ -93,20 +50,10 @@ public class OpenSearchConfiguration {
                         )
                 )
                 .setHttpClientConfigCallback(
-//                        httpClientBuilder -> {
-//                            return httpClientBuilder.addInterceptorFirst(
-//                                    new AWSRequestSigningApacheInterceptor(
-//                                            SERVICE_NAME,
-//                                            signer,
-//                                            awsCredentialsProvider
-//                                    )
-//
-//                            );
-//                        }
                         httpClientBuilder -> httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider)
-                );
+                )
+                ;
         return new RestHighLevelClient(builder);
     }
-
 
 }
