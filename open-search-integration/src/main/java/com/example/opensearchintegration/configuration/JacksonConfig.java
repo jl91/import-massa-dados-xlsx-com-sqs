@@ -2,6 +2,7 @@ package com.example.opensearchintegration.configuration;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.context.annotation.Bean;
@@ -25,13 +26,16 @@ public class JacksonConfig {
 
     @Bean
     public ObjectMapper objectMapper() {
-        return new ObjectMapper()
+        final var mapper = new ObjectMapper()
                 .registerModule(
                         new Jdk8Module()
                 )
                 .registerModule(
                         new JavaTimeModule()
                 );
+
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+        return mapper;
     }
 
     @Bean

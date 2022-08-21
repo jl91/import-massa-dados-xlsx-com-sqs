@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Accessors(chain = true)
 public abstract class BaseDocument  implements Serializable {
 
-    @JsonProperty("_id")
+//    @JsonProperty("_id")
     private String uuid;
 
     @JsonProperty("created_at")

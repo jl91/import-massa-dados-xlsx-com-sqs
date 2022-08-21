@@ -19,7 +19,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @Slf4j
@@ -121,7 +120,7 @@ public class OpenSearchService {
     ) throws IOException {
 
         log.info("Clean OpenSearch started");
-//        lineDocumentsOpenSearchService.clearIndex();
+        lineDocumentsOpenSearchService.clearIndex();
         log.info("Clean OpenSearch Done");
 
         log.info("Loading InMemoryDatabase started");
@@ -141,7 +140,6 @@ public class OpenSearchService {
             final var currentLine = iterator.next();
 
             sublist.add(currentLine);
-            currentLine.setUuid(UUID.randomUUID().toString());
             currentLine.setCreatedAt(LocalDate.now());
 
             if (sublist.size() == 100) {

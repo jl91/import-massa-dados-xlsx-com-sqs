@@ -13,6 +13,8 @@ import org.opensearch.client.RequestOptions;
 import org.opensearch.client.RestHighLevelClient;
 import org.opensearch.client.indices.CreateIndexRequest;
 import org.opensearch.client.indices.GetIndexRequest;
+import org.opensearch.common.io.stream.OutputStreamStreamOutput;
+import org.opensearch.common.io.stream.StreamOutput;
 import org.opensearch.common.settings.Settings;
 import org.opensearch.index.query.QueryBuilders;
 import org.opensearch.search.builder.SearchSourceBuilder;
@@ -172,6 +174,16 @@ public abstract class OpenSearchBaseService<T extends BaseDocument> {
         final var response = client.bulk(
                 bulkRequest,
                 RequestOptions.DEFAULT
+        );
+
+        System.out.println(response);
+
+        System.out.println(
+                String.format("Has Failures: %s", response.hasFailures())
+        );
+
+        System.out.println(
+                String.format("Failure Message: %s", response.buildFailureMessage())
         );
 
         return response.getItems().length;
