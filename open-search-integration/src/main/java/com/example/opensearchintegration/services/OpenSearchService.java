@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -127,11 +128,9 @@ public class OpenSearchService {
         final var inMemoryDatabase = CSVReader.readFile(filepath);
         log.info("Loading InMemoryDatabase done");
 
-//        log.info("Save inMemoryDatabase started");
-////        lineRepository.saveAll(inMemoryDatabase);
-//        log.info("Save inMemoryDatabase done");
 
-        final var iterator = inMemoryDatabase.subList(0, 10000)
+        final var iterator = inMemoryDatabase
+//                .subList(0, 10000)
                 .iterator();
 
         final List<LineDocument> sublist = new ArrayList<>();
@@ -140,10 +139,10 @@ public class OpenSearchService {
             final var currentLine = iterator.next();
 
             sublist.add(currentLine);
-            currentLine.setCreatedAt(LocalDate.now());
+            currentLine.setCreatedAt(LocalDateTime.now());
 
-            if (sublist.size() == 100) {
-                log.info("Saving chunk {}", (index + 1) / 100);
+            if (sublist.size() == 10000) {
+                log.info("Saving chunk {}", (index + 1) / 10000);
                 final var totalResult = lineDocumentsOpenSearchService.saveAll(sublist);
                 log.info("Total saved lines {}", totalResult);
                 sublist.clear();
