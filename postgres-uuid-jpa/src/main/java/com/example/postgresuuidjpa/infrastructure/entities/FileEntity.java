@@ -1,11 +1,13 @@
 package com.example.postgresuuidjpa.infrastructure.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -27,8 +29,12 @@ public class FileEntity {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "fileByFileId")
-    private Collection<ChunksProcessingEntity> chunksProcessingsById;
+    @OneToMany(
+            mappedBy = "fileByFileId",
+            fetch = FetchType.LAZY
+    )
+    @JsonIgnoreProperties
+    private List<ChunksProcessingEntity> chunksProcessingsById;
 
     @PrePersist
     void setDatetime() {

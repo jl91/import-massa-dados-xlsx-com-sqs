@@ -1,5 +1,6 @@
 package com.example.postgresuuidjpa.controller;
 
+import com.example.postgresuuidjpa.DTO.ChunkResponseDTO;
 import com.example.postgresuuidjpa.DTO.NewFileRequestDTO;
 import com.example.postgresuuidjpa.infrastructure.entities.ChunksProcessingEntity;
 import com.example.postgresuuidjpa.infrastructure.entities.FileEntity;
@@ -7,10 +8,8 @@ import com.example.postgresuuidjpa.service.FilesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -41,7 +40,7 @@ public class ApiController {
 
         final var chunks = new ArrayList<>();
 
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 10; i++) {
             chunks.add(
                     new ChunksProcessingEntity()
                             .setFileId(fileId)
@@ -52,6 +51,31 @@ public class ApiController {
         }
 
         filesService.saveChunksProcessing((List) chunks);
+    }
+
+    @GetMapping("files/{fileId}/chunks")
+    public List<ChunkResponseDTO> fetchAllChunks(
+            @PathVariable("fileId") final UUID fileId
+    ) {
+
+        final var files = filesService.fetchFileById(fileId);
+
+        if (files.isEmpty()) {
+            return List.of();
+        }
+
+        return files.get().getChunksProcessingsById()
+                .stream()
+                .map(entity -> new ChunkResponseDTO()
+                        .setId(entity.getId())
+                        .setFileId(entity.getFileId())
+                        .setStatus(entity.getProcessingStatusesByProcessingStatusesId().getName())
+                        .setFirstLine(entity.getFirstLine())
+                        .setLastLine(entity.getLastLine())
+                        .setCreatedAt(entity.getCreatedAt())
+                        .setUpdatedAt(entity.getUpdatedAt())
+                )
+                .collect(Collectors.toList());
     }
 
 

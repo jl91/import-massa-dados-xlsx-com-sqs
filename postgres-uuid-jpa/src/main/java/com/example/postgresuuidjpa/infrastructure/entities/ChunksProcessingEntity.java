@@ -1,5 +1,6 @@
 package com.example.postgresuuidjpa.infrastructure.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
