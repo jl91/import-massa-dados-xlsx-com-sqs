@@ -1,0 +1,25 @@
+# Use postgres/example user/password credentials
+version: '3.1'
+
+services:
+
+  postgres:
+    container_name: postgres_container
+    image: postgres:14.5-bullseye
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      PGDATA: /data/postgres
+    volumes:
+      - ./pgsql:/var/lib/postgresql
+      - ./extension:/docker-entrypoint-initdb.d/
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+  adminer:
+    depends_on:
+      - postgres
+    image: adminer
+    ports:
+      - 8080:8080
